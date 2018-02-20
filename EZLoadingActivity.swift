@@ -87,6 +87,7 @@ public struct EZLoadingActivity {
         }
         // Separate creation from showing
         let text = ""
+        Settings.BackgroundColor = .white
         Settings.ActivityWidth = 120
         Settings.ActivityHeight = 80
         instance = LoadingActivity(text: text, disableUI: disableUI)
@@ -247,7 +248,7 @@ public struct EZLoadingActivity {
             layer.shadowColor = UIColor.black.cgColor
             layer.shadowOffset = CGSize(width: 0, height: 0)
             layer.shadowRadius = 5
-            layer.shadowOpacity = 0.5
+            layer.shadowOpacity = 0.2
         }
         
         func createShadowPath() -> UIBezierPath {
