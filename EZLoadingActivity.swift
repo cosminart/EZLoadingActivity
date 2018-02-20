@@ -72,6 +72,40 @@ public struct EZLoadingActivity {
         }
         return true
     }
+    
+    /// Disable UI stops users touch actions until EZLoadingActivity is hidden. Return success status
+    @discardableResult
+    public static func showLoadingSpinner(disableUI: Bool) -> Bool {
+        guard instance == nil else {
+            print("EZLoadingActivity: You still have an active activity, please stop that before creating a new one")
+            return false
+        }
+        
+        guard topMostController != nil else {
+            print("EZLoadingActivity Error: You don't have any views set. You may be calling them in viewDidLoad. Try viewDidAppear instead.")
+            return false
+        }
+        // Separate creation from showing
+        let text = ""
+        Settings.ActivityWidth = 120
+        Settings.ActivityHeight = 80
+        instance = LoadingActivity(text: text, disableUI: disableUI)
+        instance?.showOnlySpinner()
+        DispatchQueue.main.async {
+            if Settings.DarkensBackground {
+                if overlay == nil {
+                    overlay = UIView(frame: UIApplication.shared.keyWindow!.frame)
+                }
+                overlay.backgroundColor = UIColor.black.withAlphaComponent(0)
+                topMostController?.view.addSubview(overlay)
+                UIView.animate(withDuration: 0.2, animations: {overlay.backgroundColor = overlay.backgroundColor?.withAlphaComponent(0.5)})
+            }
+            instance?.showLoadingActivity()
+        }
+        return true
+    }
+    
+    
     @discardableResult
     public static func showWithDelay(_ text: String, disableUI: Bool, seconds: Double) -> Bool {
         let showValue = show(text, disableUI: disableUI)
@@ -187,6 +221,12 @@ public struct EZLoadingActivity {
             UIView.animate(withDuration: 0.2, animations: {
                 self.alpha = 1
             })
+        }
+        
+        func showOnlySpinner() {
+            let yPosition = frame.height/2 - 20
+            textLabel.isHidden = true
+            activityView.frame = CGRect(x: (Settings.ActivityWidth - 40) / 2, y: yPosition, width: 40, height: 40)
         }
         
         func showLoadingWithController(_ controller:UIViewController){
